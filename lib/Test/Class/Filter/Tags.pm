@@ -13,7 +13,7 @@ my $filter = sub {
     # than once outside of the filter.
 
     # don't filter if TEST_TAGS env var not set`
-    return if not defined $ENV{ TEST_TAGS };
+    return 1 if not defined $ENV{ TEST_TAGS };
 
     my $test_tags = $ENV{ TEST_TAGS };
     $test_tags =~ s/^\s+//;
@@ -29,7 +29,7 @@ my $filter = sub {
         );
     } @tags;
 
-    return 1 if not $matched;
+    return 1 if $matched;
 };
 
 Test::Class->add_filter( $filter );
@@ -126,7 +126,7 @@ Mark Morgan <makk384@gmail.com>
 =head1 BUGS
 
 Please send bugs or feature requests through to
-bugs-Test-Class-Filter-Tags@rt.rt.cpan.org or through web interface
+bugs-Test-Class-Filter-Tags@rt.cpan.org or through web interface
 L<http://rt.cpan.org> .
 
 =head1 COPYRIGHT AND LICENSE
