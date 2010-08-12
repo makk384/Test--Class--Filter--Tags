@@ -1,25 +1,32 @@
 package Test::Class::Filter::Tags;
 
-use Test::Class;
+use strict;
+use warnings;
+
 use Attribute::Method::Tags;
+use Test::Class;
 
 our $VERSION = '0.10';
 
 my $filter = sub {
     my ( $test_class, $test_method ) = @_;
 
-    # as test_class permits changing of the TEST_METHOD definitions,
-    # support doing similar for TEST_TAGS, so need to check it here, rather
-    # than once outside of the filter.
+    # don't filter if our relevant env vars not set`
+    return 1 unless defined $ENV{ TEST_TAGS }
+      or defined $ENV{ TEST_TAGS_SKIP };
 
-    # don't filter if TEST_TAGS env var not set`
-    return 1 if not defined $ENV{ TEST_TAGS };
+    my $suppressed = grep {
+        Attribute::Method::Tags::Registry->method_has_tag(
+            $test_class,
+            $test_method,
+            $_
+        )
+    } __expand_filter_vars( $ENV{ TEST_TAGS_SKIP } );
 
-    my $test_tags = $ENV{ TEST_TAGS };
-    $test_tags =~ s/^\s+//;
-    $test_tags =~ s/\s+$//;
+    return 0 if $suppressed;
 
-    my @tags = split /[\s,]+/, $test_tags;
+    # don't filter on set tags, if there are no set tags
+    return 1 unless defined $ENV{ TEST_TAGS };
 
     my $matched = grep { 
         Attribute::Method::Tags::Registry->method_has_tag(
@@ -27,11 +34,27 @@ my $filter = sub {
             $test_method,
             $_
         );
-    } @tags;
+    } __expand_filter_vars( $ENV{ TEST_TAGS } );
 
     return 1 if $matched;
 };
 
+# as test_class permits changing of the TEST_METHOD definitions,
+# support doing similar for our controlling ENV vars
+sub __expand_filter_vars {
+    my $val = shift;
+
+    return if not defined $val;
+
+    $val =~ s/^\s+//;
+    $val =~ s/\s+$//;
+
+    my @tags = split /[\s,]/, $val;
+
+    return @tags;
+}
+
+# and finally, add our filter callback.
 Test::Class->add_filter( $filter );
 
 1;
@@ -41,7 +64,7 @@ __END__
 =head1 NAME
 
 Test::Class::Filter::Tags - Selectively run only a subset of Test::Class tests
-that have the specified method tag.
+the inclusde/exclude the specified tags.
 
 =head1 SYNOPSIS
 
@@ -82,14 +105,23 @@ that have the specified method tag.
  # first because it has the 'quick' tag, and the second becuase it has
  # 'loose' tag.  t_baz doesn't have either tag, so it's not run.
 
+ # Alternatively, can specify TEST_TAGS_SKIP, in a similar fashion,
+ # to *not* run tests with the specified tags
+
 =head1 DESCRIPTION
 
 When used in conjunction with L<Test::Class> tests, that also define
 L<Attribute::Method::Tags> tags, this class allows filtering of the
-tests that will be run.  If $ENV{ TEST_TAGS } is set, it will be
-treated as a list of tags, seperated by any combination of whitespace or
-commas.  The tests that will be run will only be the subset of tests
-that have at least of these tags specified.
+tests that will be run.
+
+If $ENV{ TEST_TAGS } is set, it will be treated as a list of tags,
+seperated by any combination of whitespace or commas.  The tests that
+will be run will only be the subset of tests that have at least of one
+these tags specified.
+
+Conversely, you may want to run all tests that *don't* have specific
+tags.  This can be done by specifying the tags to exclude in
+$ENV{ TEST_TAGS_SKIP }.
 
 Note that, as per normal Test::Class behaviour, only normal tests will
 be filtered.  Any fixture tests (startup, shutdown, setup and teardown)
@@ -110,7 +142,7 @@ both).
 
 =item Test::Class
 
-This class acts as a normal Test::Class filter.
+This class is implemented via the Test::Class filtering mechanism.
 
 =item Attribute::Method::Tags
 
@@ -126,7 +158,7 @@ Mark Morgan <makk384@gmail.com>
 =head1 BUGS
 
 Please send bugs or feature requests through to
-bugs-Test-Class-Filter-Tags@rt.cpan.org or through web interface
+bugs-Test-Class-Filter-Tags@rt.rt.cpan.org or through web interface
 L<http://rt.cpan.org> .
 
 =head1 COPYRIGHT AND LICENSE

@@ -1,5 +1,5 @@
 ---
-abstract: "Selectively run only a subset of Test::Class tests\nthat have the specified method tag."
+abstract: "Selectively run only a subset of Test::Class tests\nthe inclusde/exclude the specified tags."
 author:
   - 'Mark Morgan <makk384@gmail.com>'
 configure_requires:

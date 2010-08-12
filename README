@@ -1,6 +1,6 @@
 NAME
     Test::Class::Filter::Tags - Selectively run only a subset of Test::Class
-    tests that have the specified method tag.
+    tests the inclusde/exclude the specified tags.
 
 SYNOPSIS
      package MyTests::Wibble;
@@ -40,13 +40,22 @@ SYNOPSIS
      # first because it has the 'quick' tag, and the second becuase it has
      # 'loose' tag.  t_baz doesn't have either tag, so it's not run.
 
+     # Alternatively, can specify TEST_TAGS_SKIP, in a similar fashion,
+     # to *not* run tests with the specified tags
+
 DESCRIPTION
     When used in conjunction with Test::Class tests, that also define
     Attribute::Method::Tags tags, this class allows filtering of the tests
-    that will be run. If $ENV{ TEST_TAGS } is set, it will be treated as a
-    list of tags, seperated by any combination of whitespace or commas. The
-    tests that will be run will only be the subset of tests that have at
-    least of these tags specified.
+    that will be run.
+
+    If $ENV{ TEST_TAGS } is set, it will be treated as a list of tags,
+    seperated by any combination of whitespace or commas. The tests that
+    will be run will only be the subset of tests that have at least of one
+    these tags specified.
+
+    Conversely, you may want to run all tests that *don't* have specific
+    tags. This can be done by specifying the tags to exclude in $ENV{
+    TEST_TAGS_SKIP }.
 
     Note that, as per normal Test::Class behaviour, only normal tests will
     be filtered. Any fixture tests (startup, shutdown, setup and teardown)
@@ -62,7 +71,7 @@ TAGS ADDITIVE OVER INHERITANCE
 
 SEE ALSO
     Test::Class
-        This class acts as a normal Test::Class filter.
+        This class is implemented via the Test::Class filtering mechanism.
 
     Attribute::Method::Tags
         Attribute-based tag definitions. This class assumes that you'll be

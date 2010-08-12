@@ -11,30 +11,34 @@ use base qw( Test::Class );
 our @run;
 
 sub startup : Test( startup ) Tags( bar ) {
+    diag( "startup run" ) if $ENV{ TEST_CLASS_TAGS_AUTHOR };
     push @run, 'startup';
 }
 
 sub setup : Test( setup ) Tags( bar ) {
+    diag( "--> setup run" ) if $ENV{ TEST_CLASS_TAGS_AUTHOR };
     push @run, 'setup';
 }
 
-sub shutdown : Test( shutdown ) Tags( bar ) {
-    push @run, 'shutdown';
-}
-
 sub teardown : Test( teardown ) Tags( bar ) {
+    diag( "--> teardown run" ) if $ENV{ TEST_CLASS_TAGS_AUTHOR };
     push @run, 'teardown';
 }
 
+sub shutdown : Test( shutdown ) Tags( bar ) {
+    diag( "shutdown run" ) if $ENV{ TEST_CLASS_TAGS_AUTHOR };
+    push @run, 'shutdown';
+}
+
 sub foo : Tests Tags( foo ) {
-    pass( "foo ran" );
+    diag( "---- foo run" ) if $ENV{ TEST_CLASS_TAGS_AUTHOR };
     push @run, "foo";
 }
 
 package main;
 
 use Test::Class::Filter::Tags;
-use Test::More tests => 5;
+use Test::More tests => 4;
 
 # no filter
 {
@@ -50,7 +54,7 @@ use Test::More tests => 5;
 
 # tags ignored on fixture methods
 {
-    $ENV{ TEST_TAGS } = 'foo';
+    local $ENV{ TEST_TAGS } = 'foo';
 
     @Base::run = ();
     Base->runtests;
@@ -62,9 +66,25 @@ use Test::More tests => 5;
     );
 }
 
+# tags ignored when suppressing tags also
+{
+    local $ENV{ TEST_TAGS_SKIP } = 'bar';
+
+    @Base::run = ();
+    Base->runtests;
+
+    is_deeply(
+        \@Base::run,
+        [ qw( startup setup foo teardown shutdown ) ],
+        "tags are ignored on fixture methods when suppressing also"
+    );
+}
+
+# tags ignored when suppressing tags also
+
 # filter matching no tags, startup, shutdown still run
 {
-    $ENV{ TEST_TAGS } = 'wibble';
+    local $ENV{ TEST_TAGS } = 'wibble';
 
     @Base::run = ();
     Base->runtests;
