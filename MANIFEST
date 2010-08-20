@@ -2,9 +2,11 @@ Build.PL
 lib/Test/Class/Filter/Tags.pm
 Makefile.PL
 MANIFEST			This list of files
+MANIFEST.SKIP
 META.yml
 README
-t/t01-basics.t
-t/t02-tags_on_fixtures.t
-t/t03-tag_inheritance.t
-t/t04-overriding_tags.t
+t/01-basics.t
+t/02-tags_on_fixtures.t
+t/03-tag_inheritance.t
+t/04-overriding_tags.t
+t/05-custom-base.t

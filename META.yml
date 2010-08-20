@@ -1,5 +1,5 @@
 ---
-abstract: "Selectively run only a subset of Test::Class tests\nthe inclusde/exclude the specified tags."
+abstract: 'Selectively run only a subset of Test::Class tests that inclusde/exclude the specified tags.'
 author:
   - 'Mark Morgan <makk384@gmail.com>'
 configure_requires:
@@ -16,7 +16,7 @@ provides:
     version: 0.10
 requires:
   Attribute::Method::Tags: 0.1
-  Test::Class: 0.35
+  Test::Class: 0.36
 resources:
   license: http://dev.perl.org/licenses/
 version: 0.10

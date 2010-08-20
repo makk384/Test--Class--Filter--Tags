@@ -6,7 +6,7 @@ WriteMakefile
           'VERSION_FROM' => 'lib/Test/Class/Filter/Tags.pm',
           'PREREQ_PM' => {
                            'Attribute::Method::Tags' => '0.1',
-                           'Test::Class' => '0.35'
+                           'Test::Class' => '0.36'
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [],

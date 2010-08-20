@@ -1,16 +1,38 @@
 NAME
     Test::Class::Filter::Tags - Selectively run only a subset of Test::Class
-    tests the inclusde/exclude the specified tags.
+    tests that inclusde/exclude the specified tags.
 
 SYNOPSIS
+     # define a test baseclass, to avoid boilerplate
+
+     package MyTests::Base;
+
+     # get Tags definitions.  This could be done in each test class, but
+     # doing it here avoids needless repetition.
+
+     use Attribute::Method::Tags;
+
+     # and load the filter class.  This could be done in the driver, but
+     # simpler to do here.
+
+     use Test::Class::Filter::Tags
+
+     # and, of course, inherit from Test::Class;
+
+     use base qw( MyTests::Base );
+
+     1;
+
+
      package MyTests::Wibble;
 
-     # use Attribute::Method::Tags to get Tags definition
-     use Attribute::Method::Tags;
+     # using custom baseclass, don't have to worry about importing attribute
+     # class for each test
 
      use Base qw( Test::Class );
 
      # can specify both Test and Tags attributes on test methods
+
      sub t_foo : Test( 1 ) Tags( quick fast ) {
      }
 
@@ -26,11 +48,9 @@ SYNOPSIS
      #
      # in Test::Class driver script, or your Test::Class baseclass
      #
-     use Test::Class;
-     use Test::Class::Filter::Tags;
 
      # load the test classes, in whatever manner you normally use
-     # ...
+     use MyTests::Wibble;
 
      $ENV{ TEST_TAGS } = 'quick,loose';
 

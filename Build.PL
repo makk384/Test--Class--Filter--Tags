@@ -5,7 +5,7 @@ my $build = Module::Build->new(
     license             => 'perl',
     requires            => {
         'Attribute::Method::Tags'   => 0.10,
-        'Test::Class'               => 0.35,
+        'Test::Class'               => 0.36,
     },
     create_makefile_pl  => 'traditional',
     create_readme       => 1,
