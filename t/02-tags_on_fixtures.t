@@ -3,7 +3,7 @@ package Base;
 use strict;
 use warnings;
 
-use Attribute::Method::Tags;
+use Test::Class::Filter::Tags;
 use Test::More;
 
 use base qw( Test::Class );
@@ -37,8 +37,7 @@ sub foo : Tests Tags( foo ) {
 
 package main;
 
-use Test::Class::Filter::Tags;
-use Test::More tests => 4;
+use Test::More tests => 3;
 
 # no filter
 {
@@ -77,21 +76,5 @@ use Test::More tests => 4;
         \@Base::run,
         [ qw( startup setup foo teardown shutdown ) ],
         "tags are ignored on fixture methods when suppressing also"
-    );
-}
-
-# tags ignored when suppressing tags also
-
-# filter matching no tags, startup, shutdown still run
-{
-    local $ENV{ TEST_TAGS } = 'wibble';
-
-    @Base::run = ();
-    Base->runtests;
-
-    is_deeply(
-        \@Base::run,
-        [ qw( startup shutdown ) ],
-        "startup/shutdown still run, when nothing matches fixture, even if they have tags that don't match run"
     );
 }

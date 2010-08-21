@@ -6,7 +6,12 @@ use warnings;
 use Attribute::Method::Tags;
 use Test::Class;
 
+use base qw( Exporter );
+
 our $VERSION = '0.10';
+
+# import the 'Tags' attribute into the caller
+our @EXPORT = qw( Tags );
 
 my $filter = sub {
     my ( $test_class, $test_method ) = @_;
@@ -71,13 +76,8 @@ Test::Class::Filter::Tags - Selectively run only a subset of Test::Class tests t
 
  package MyTests::Base;
 
- # get Tags definitions.  This could be done in each test class, but
- # doing it here avoids needless repetition.
-
- use Attribute::Method::Tags;
-
- # and load the filter class.  This could be done in the driver, but
- # simpler to do here.
+ # load the filter class.  This will both add the filter to Test::Class, as
+ # well as importing the 'Tags' attribute into the current namespace
 
  use Test::Class::Filter::Tags
 
@@ -147,6 +147,12 @@ be filtered.  Any fixture tests (startup, shutdown, setup and teardown)
 will still be run, where appropriate, whether they have the given
 attributes or not.
 
+=head1 IMPORTS
+
+By using this class, you'll get the 'Tags' attribute imported into your
+namespace.  This is required to be able to add B<Tags> attribute to your
+test methods.
+
 =head1 TAGS ADDITIVE OVER INHERITANCE
 
 When inheriting from test classes, the subclasses will adopt any tags
@@ -162,11 +168,6 @@ both).
 =item Test::Class
 
 This class is implemented via the Test::Class filtering mechanism.
-
-=item Attribute::Method::Tags
-
-Attribute-based tag definitions.  This class assumes that you'll be
-implementing tags via this mechanism.
 
 =back
 

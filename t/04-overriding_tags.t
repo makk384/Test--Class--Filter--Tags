@@ -3,7 +3,7 @@ package Base;
 use strict;
 use warnings;
 
-use Attribute::Method::Tags;
+use Test::Class::Filter::Tags;
 use Test::More;
 
 use base qw( Test::Class );
@@ -48,7 +48,6 @@ sub foo : Tests Tags( bar ) {
 
 package main;
 
-use Test::Class::Filter::Tags;
 use Test::More tests => 3;
 
 # no filter

@@ -3,7 +3,7 @@ package MyTestBase;
 use strict;
 use warnings;
 
-use Attribute::Method::Tags;
+use Test::Class::Filter::Tags;
 
 use base qw( Test::Class );
 
@@ -60,7 +60,6 @@ sub baz : Tests {
     
 package main;
 
-use Test::Class::Filter::Tags;
 use Test::More tests => 7;
 
 # no filter
@@ -154,10 +153,11 @@ use Test::More tests => 7;
     @Base::run = ();
     Base->runtests;
 
-    is_deeply(
-        \@Base::run,
-        [ qw( startup shutdown ) ],
-        'expected run, when both including and suppressing, that fully overlap'
+    my $methods_run = grep { /foo|bar|baz/ } @Base::run;
+
+    is( $methods_run,
+        0,
+        'no test methods run, when both including and suppressing, that fully overlap'
     );
 }
 

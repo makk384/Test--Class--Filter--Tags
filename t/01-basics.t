@@ -3,7 +3,7 @@ package Base;
 use strict;
 use warnings;
 
-use Attribute::Method::Tags;
+use Test::Class::Filter::Tags;
 use Test::More;
 
 use base qw( Test::Class );
@@ -52,8 +52,7 @@ sub baz : Tests {
     
 package main;
 
-use Test::Class::Filter::Tags;
-use Test::More tests => 7;
+use Test::More tests => 6;
 
 # no filter
 {
@@ -121,20 +120,6 @@ use Test::More tests => 7;
         \@Base::run,
         [ qw( startup setup foo teardown shutdown ) ],
         'expected run, when both including and suppressing tags that partially overlap'
-    );
-}
-
-# filter matching no tags, startup, shutdown still run
-{
-    local $ENV{ TEST_TAGS } = 'wibble';
-
-    @Base::run = ();
-    Base->runtests;
-
-    is_deeply(
-        \@Base::run,
-        [ qw( startup shutdown ) ],
-        'when specifying tags that match no methods, startup and shutdown still run'
     );
 }
 
