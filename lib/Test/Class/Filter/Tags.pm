@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use Attribute::Method::Tags;
+use Attribute::Method::Tags::Registry;
+use MRO::Compat;
 use Test::Class;
 
 use base qw( Exporter );
@@ -61,6 +63,21 @@ sub __expand_filter_vars {
 
 # and finally, add our filter callback.
 Test::Class->add_filter( $filter );
+
+# supporting method, to determine if any instances of method have tag defined
+# in current class, and all subclasses.
+sub method_has_tag {
+    my ( $self, $class, $method, $tag ) = @_;
+
+    my $isa = mro::get_linear_isa( $class );
+    foreach my $c ( @{ $isa } ) {
+        return 1 if Attribute::Method::Tags::Registry->method_has_tag(
+            $c, $method, $tag
+        );
+    }
+
+    return 0;
+}
 
 1;
 
@@ -152,6 +169,20 @@ attributes or not.
 By using this class, you'll get the 'Tags' attribute imported into your
 namespace.  This is required to be able to add B<Tags> attribute to your
 test methods.
+
+=head1 METHODS
+
+=over 4
+
+=item method_has_tag( $class, $method, $tag )
+
+Returns a true value if $tag is defined on $method in $class, or any
+of $class'es super-classes.  This may sound of limited use, but one of the
+use cases presented to me when developing this module was to have setup
+fixtures conditionally run if the method that's being tested has a
+specific tag.
+
+=back
 
 =head1 TAGS ADDITIVE OVER INHERITANCE
 
